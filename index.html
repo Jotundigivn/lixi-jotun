@@ -11,9 +11,14 @@
     body{ margin:0; font-family:'Segoe UI', Arial, Helvetica, sans-serif; background: radial-gradient(circle at 50% -20%, #ffe4a3, #fff8e6 45%, #fff8e6); color:#222; min-height:100vh; display:flex; align-items:center; justify-content:center; }
     .card{ width:min(720px,92vw); background:#fff; border-radius:20px; box-shadow:0 20px 60px rgba(0,0,0,.12); overflow:hidden; border:6px solid var(--jotun-yellow); position:relative }
     header{ background:linear-gradient(90deg,var(--jotun-navy), #022f52 60%); color:#fff; padding:14px 18px; display:flex; align-items:center; gap:14px }
-    header img.logo{ height:48px; width:auto; display:block; border-radius:6px; background:#fff; padding:6px; box-shadow:0 2px 0 rgba(0,0,0,.12) }
-    header .logo-fallback{ display:none; font-weight:900; background:#F9B233; color:#003057; padding:8px 10px; border-radius:6px }
-    header h1{ font-size:18px; margin:0; font-weight:700 }
+    /* === Jotun logo: show exact brand, no decoration === */
+    header img.logo{
+      height: 44px;      /* chỉnh 40–48 tùy ý */
+      width: auto;
+      display: block;
+      padding: 0; background: transparent; border-radius: 0; box-shadow: none; object-fit: contain;
+    }
+    header h1{ font-size:18px; margin:0; font-weight:700; line-height:1.25 }
     header small{ display:block; opacity:.9 }
 
     .content{ padding:26px 18px 34px; text-align:center }
@@ -39,8 +44,7 @@
 
   <div class="card">
     <header>
-      <img src="logo-jotun.png" alt="Jotun" class="logo" onerror="this.style.display='none';this.nextElementSibling.style.display='inline-block'" />
-      <span class="logo-fallback">JOTUN</span>
+      <img src="logo-jotun.png" alt="Jotun" class="logo" />
       <div>
         <h1>Jotun Việt Nam</h1>
         <small>Thiệp chúc Tết & lì xì may mắn</small>
@@ -68,7 +72,6 @@
   const START_DELAY = 600;
   const RANKS = [1_000_000, 100_000, 10_000, 1_000, 100, 10, 1];
   const easeOut = t => 1 - Math.pow(1 - t, 3);
-
   function clamp(v, min, max){ return Math.min(max, Math.max(min, v)); }
   function quantize(v, step){ return Math.round(v / step) * step; }
 
