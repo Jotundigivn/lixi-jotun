@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lì xì may mắn | Jotun</title>
+  <style>
+    :root{
+      --jotun-navy:#003057;
+      --jotun-yellow:#F9B233;
+      --jotun-red:#E03C31;
+      --bg:#fff8e6;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family: 'Segoe UI', Arial, Helvetica, sans-serif; 
+      background: radial-gradient(circle at 50% -20%, #ffe4a3, #fff8e6 45%, #fff8e6);
+      color:#222;
+      min-height:100vh; display:flex; align-items:center; justify-content:center;
+    }
+    .card{
+      width:min(720px, 92vw);
+      background:#fff; border-radius:20px; box-shadow:0 20px 60px rgba(0,0,0,.12);
+      overflow:hidden; position:relative; padding:0; border:6px solid var(--jotun-yellow);
+    }
+    header{
+      background:linear-gradient(90deg,var(--jotun-navy), #022f52 60%);
+      color:white; padding:18px 22px; display:flex; align-items:center; gap:14px;
+    }
+    .logo{
+      width:52px; height:52px; display:inline-grid; place-items:center; border-radius:8px; overflow:hidden; background:var(--jotun-yellow); border:3px solid #ffcf6b;
+    }
+    .logo span{ font-weight:900; color:var(--jotun-navy); font-size:13px; letter-spacing:1px; }
+    header h1{ font-size:20px; margin:0; font-weight:700 }
+    header small{ display:block; font-weight:400; opacity:.9 }
+
+    .content{ padding:28px 22px 36px; text-align:center }
+    .greeting{ font-size:28px; margin:6px 0 12px; font-weight:800; color:var(--jotun-navy) }
+    .subtitle{ margin:0 0 16px; color:#444 }
+
+    .money{
+      font-variant-numeric: tabular-nums; 
+      font-size: clamp(44px, 8vw, 72px);
+      line-height:1; font-weight:900; color:var(--jotun-red);
+      text-shadow:0 6px 0 rgba(224,60,49,.12);
+      margin:18px 0 6px;
+    }
+    .unit{ color:#a61b1b; font-weight:700 }
+
+    .progress-wrap{ width:100%; max-width:520px; height:10px; background:#ffe0b3; border-radius:999px; margin:18px auto 6px; overflow:hidden }
+    .progress{ height:100%; width:0; background:linear-gradient(90deg, var(--jotun-red), #ff7a66); transition:width .2s ease-out }
+
+    .note{ color:#666; font-size:14px; }
+
+    footer{ padding:14px 18px 22px; display:flex; justify-content:center; gap:10px; flex-wrap:wrap }
+    .badge{ padding:8px 12px; border-radius:999px; background:#fff3d6; color:#7a5200; font-weight:600; border:1px solid #ffe1a8 }
+
+    /* Simple confetti (pure CSS + JS canvas) */
+    canvas#confetti{ position:fixed; inset:0; pointer-events:none }
+  </style>
+</head>
+<body>
+  <canvas id="confetti"></canvas>
+  <div class="card" role="article" aria-label="Thiệp lì xì Jotun">
+    <header>
+      <div class="logo" aria-hidden="true"><span>JOTUN</span></div>
+      <div>
+        <h1>Jotun Việt Nam</h1>
+        <small>Thiệp chúc Tết & lì xì may mắn</small>
+      </div>
+    </header>
+    <div class="content">
+      <div class="greeting">Chúc mừng năm mới! 🎉</div>
+      <p class="subtitle">Mở quà ngay – xem số **lì xì** dành riêng cho bạn</p>
+      <div class="money" id="money">0</div>
+      <div class="unit">đồng</div>
+
+      <div class="progress-wrap" aria-hidden="true"><div class="progress" id="bar"></div></div>
+      <p class="note">Hiệu ứng đếm tiền để tăng kịch tính • Số thực nhận đã cố định trước</p>
+    </div>
+    <footer>
+      <span class="badge">Sơn đẹp – Nhà bền</span>
+      <span class="badge">Chúc Xuân An Khang – Vạn Sự Như Ý</span>
+    </footer>
+  </div>
+
+<script>
+  // ===== Config có thể chỉnh nhanh không cần dev =====
+  const TARGET = 10000000;        // số tiền cuối cùng
+  const DURATION = 2800;          // thời gian chạy (ms)
+  const START_DELAY = 600;         // trễ trước khi chạy (ms)
+  const CURRENCY_LOCALE = 'vi-VN';
+
+  function animateCount(el, from, to, duration){
+    const start = performance.now();
+    function tick(now){
+      const t = Math.min(1, (now - start)/duration);
+      // ease-out cubic
+      const eased = 1 - Math.pow(1 - t, 3);
+      const value = Math.floor(from + (to - from) * eased);
+      el.textContent = value.toLocaleString(CURRENCY_LOCALE);
+      const bar = document.getElementById('bar');
+      if(bar){ bar.style.width = (eased*100).toFixed(2) + '%'; }
+      if(t < 1) requestAnimationFrame(tick); else { launchConfetti(); }
+    }
+    requestAnimationFrame(tick);
+  }
+
+  // Simple confetti without external CDN
+  function launchConfetti(){
+    const canvas = document.getElementById('confetti');
+    const ctx = canvas.getContext('2d');
+    const pieces = [];
+    const colors = ['#F9B233','#E03C31','#003057','#ff7a66','#ffd166'];
+    function resize(){ canvas.width = innerWidth; canvas.height = innerHeight; }
+    resize(); addEventListener('resize', resize);
+
+    for(let i=0;i<140;i++){
+      pieces.push({
+        x: Math.random()*canvas.width,
+        y: -20 - Math.random()*canvas.height*0.5,
+        r: 4 + Math.random()*6,
+        tilt: Math.random()*Math.PI,
+        color: colors[(Math.random()*colors.length)|0],
+        speed: 1 + Math.random()*2.5
+      });
+    }
+    let life = 0;
+    (function draw(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      pieces.forEach(p=>{
+        p.y += p.speed; p.tilt += 0.1; 
+        ctx.fillStyle = p.color;
+        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.tilt);
+        ctx.fillRect(-p.r, -p.r, p.r*2, p.r*2*0.6);
+        ctx.restore();
+      });
+      life++;
+      if(life < 260) requestAnimationFrame(draw); else { ctx.clearRect(0,0,canvas.width,canvas.height); }
+    })();
+  }
+
+  setTimeout(()=>{
+    animateCount(document.getElementById('money'), 0, TARGET, DURATION);
+  }, START_DELAY);
+</script>
+</body>
+</html>
